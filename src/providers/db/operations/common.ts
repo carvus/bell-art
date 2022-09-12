@@ -15,8 +15,12 @@ const operations: {
   update: (tableName: string, data: TDictionary, condition?: TDictionary, getQuery?: boolean) => Promise<{ message: string } | string>,
   remove: (tableName: string, condition: TDictionary, getQuery?: boolean) => Promise<{ message: string } | string>
   transactions: (queries: TTransactionParam, inOrder?: boolean) => Promise<any>
+  getRowsCount: (tableName: string) => Promise<[{ count: number }]>
 
 } = {
+  async getRowsCount(tableName) {
+    return operations.exec("SELECT COUNT(*) count FROM ??;", [tableName]);
+  },
   async getOne(tableName, value, key = "id") {
     const items = await this.exec("SELECT * FROM ?? WHERE ??=?;", [tableName, key, value]);
 

@@ -1,29 +1,29 @@
 import { TRoute } from './lib/types';
 import express, { Application, NextFunction, Request, Response } from "express";
-import cors from "cors"; 
+import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 
 // ROUTES
 import apiRouter from "./api";
- 
+
 dotenv.config();
-  
- 
-const app:Application = express();
+
+
+const app: Application = express();
 
 // global middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({
-	extended: true
+    extended: true
 }));
 app.use(
-    "",
-    /*fileAuth,*/ express.static(
-      path.join(path.resolve(), `public`, `protected_files`)
+    "/images",
+    express.static(
+        path.join(path.resolve(), `public`, `protected_files`)
     )
-  );
+);
 
 const rootRoutes: TRoute[] = [
     { path: "/api", router: apiRouter },
@@ -34,7 +34,7 @@ rootRoutes.forEach(route => {
     app.use(route.path, route.router);
 })
 
-app.use('*', ( req, res ) => { 
+app.use('*', (req, res) => {
     res.status(404).json({
         meta: {
             error: {
