@@ -1,4 +1,4 @@
-import { sendMailController } from './../controllers/index';
+import { getSliderImagesController, sendMailController } from './../controllers/index';
 import { Router } from 'express';
 import { TRoute } from './../lib/types';
 import { setupRouter } from '../lib';
@@ -13,7 +13,7 @@ const servicesCrud: Crud = new Crud("services");
 
 router.get("/advantages", advantagesCrud.get);
 router.get("/services", servicesCrud.get);
-
+router.get("/slider_images", getSliderImagesController);
 router.post("/send_message", validate("send_mail"), sendMailController);
 
 const apiRoutes: TRoute[] = [
