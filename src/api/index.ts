@@ -1,13 +1,23 @@
+import { getSliderImagesController, sendMailController } from './../controllers/index';
 import { Router } from 'express';
 import { TRoute } from './../lib/types';
 import { setupRouter } from '../lib';
-
-import appRouter from './app';
+import productsRouter from "./products";
+import Crud from '../lib/crud';
+import validate from '../middlewares/validator';
 
 const router: Router = Router();
 
+const advantagesCrud: Crud = new Crud("advantages");
+const servicesCrud: Crud = new Crud("services");
+
+router.get("/advantages", advantagesCrud.get);
+router.get("/services", servicesCrud.get);
+router.get("/slider_images", getSliderImagesController);
+router.post("/send_message", validate("send_mail"), sendMailController);
+
 const apiRoutes: TRoute[] = [
-    { path: `/app`, router: appRouter },
+    { path: "/products", router: productsRouter },
 ]
 
 setupRouter(apiRoutes, router);

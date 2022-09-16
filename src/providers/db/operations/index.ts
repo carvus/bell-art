@@ -1,8 +1,8 @@
-import app from './slices/app';
-import common from './common'; 
+import index from './slices/index';
+import common from './common';
 
 const DbOperations = {
-  app,
+  index,
   common
 };
 
