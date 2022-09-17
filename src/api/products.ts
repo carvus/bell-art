@@ -1,15 +1,11 @@
 import { Router } from "express";
-import { getProductsController } from './../controllers/products';
-import Crud from "../lib/crud";
+import { getCurrentProductController, getProductsController, getProductTypesController } from './../controllers/products';
 
 const router: Router = Router();
 
-const typesCrud: Crud = new Crud("product_types");
-const productsCrud: Crud = new Crud("products");
-
-router.get("/types", typesCrud.get);
+router.get("/types", getProductTypesController);
 
 router.get("/:typeId", getProductsController);
-router.get("/current/:id", productsCrud.current);
+router.get("/current/:id", getCurrentProductController);
 
 export default router;
