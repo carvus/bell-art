@@ -8,7 +8,7 @@ export default {
     },
     getProducts(language: string | string[] | undefined, typeId: string, page: number, rowsPerPage: number) {
         return operations.exec(
-            `SELECT id, title_${language} title, description_${language} description, price FROM products ` +
+            `SELECT id, title_${language} title, description_${language} description, price, image FROM products ` +
             "WHERE `type_id` = ? " +
             "LIMIT ?, ?",
             [typeId, (page - 1) * rowsPerPage, rowsPerPage]
@@ -16,7 +16,7 @@ export default {
     },
     getCurrentProduct(language: string | string[] | undefined, id: string) {
         return operations.exec(
-            `SELECT id, title_${language} title, description_${language} description, price FROM products ` +
+            `SELECT id, title_${language} title, description_${language} description, image, price FROM products ` +
             "WHERE id = ?",
             [id]
         );
