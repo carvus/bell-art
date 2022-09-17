@@ -3,10 +3,11 @@ import { createController } from "../lib";
 import DbOperations from "../providers/db/operations";
 
 const { common, index } = DbOperations;
+
 export const getProductTypesController = createController(async (req: Request) => {
     const { language } = req.headers;
     return {
-        items: await common.select("product_types", ["id", `title_${language}`, "image"])
+        items: await index.getProductTypes(language)
     }
 });
 
