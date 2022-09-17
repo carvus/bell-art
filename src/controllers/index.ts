@@ -36,6 +36,11 @@ export const getServicesController = createController(async (req: Request) => {
     const page: number = Number.isNaN(parseInt((Array.isArray(qp) ? qp[0] : qp) + "" || "a")) ? 1 : parseInt((Array.isArray(qp) ? qp[0] : qp) + "" || "a");
     const rowsPerPage: number = Number.isNaN(parseInt((Array.isArray(qrpp) ? qrpp[0] : qrpp) + "" || "a")) ? 100 : parseInt((Array.isArray(qrpp) ? qrpp[0] : qrpp) + "" || "a");
     return {
-        items: await index.getServices(language, page, rowsPerPage)
+        items: (await index.getServices(language, page, rowsPerPage)).map((el: any) => {
+            return {
+                ...el,
+                description: el.description.split("^^^^")
+            }
+        })
     }
 });
