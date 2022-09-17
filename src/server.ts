@@ -25,14 +25,7 @@ app.use(
     )
 );
 
-const rootRoutes: TRoute[] = [
-    { path: "/api", router: apiRouter },
-]
-
-
-rootRoutes.forEach(route => {
-    app.use(route.path, route.router);
-})
+app.use("/", apiRouter);
 
 app.use('*', (req, res) => {
     res.status(404).json({
