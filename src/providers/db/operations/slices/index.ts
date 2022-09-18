@@ -4,7 +4,14 @@ export default {
     getProductTypes(language: string | string[] | undefined) {
         return operations.exec(
             `SELECT id, title_${language} title, image FROM product_types`
-        )
+        );
+    },
+    getProductType(language: string | string[] | undefined, id: string) {
+        return operations.exec(
+            `SELECT id, title_${language} title, image FROM product_types ` +
+            "WHERE `id` = ?",
+            [id]
+        );
     },
     getProducts(language: string | string[] | undefined, typeId: string, page: number, rowsPerPage: number) {
         return operations.exec(
