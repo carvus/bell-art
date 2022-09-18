@@ -23,6 +23,7 @@ export const getProductsController = createController(async (req: Request) => {
 
     return {
         pagesCount: Math.ceil(count / rowsPerPage),
+        productType: await index.getProductType(language, typeId),
         items: await index.getProducts(language, typeId, page, rowsPerPage)
     }
 });
