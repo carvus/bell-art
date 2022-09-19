@@ -18,12 +18,15 @@ export const getProductsController = createController(async (req: Request) => {
     const qrpp = req.query.rowsPerPage;
     const page: number = Number.isNaN(parseInt((Array.isArray(qp) ? qp[0] : qp) + "" || "a")) ? 1 : parseInt((Array.isArray(qp) ? qp[0] : qp) + "" || "a");
     const rowsPerPage: number = Number.isNaN(parseInt((Array.isArray(qrpp) ? qrpp[0] : qrpp) + "" || "a")) ? 100 : parseInt((Array.isArray(qrpp) ? qrpp[0] : qrpp) + "" || "a");
-
+    const [productType] = await index.getProductType(language, typeId);
     const [{ count }] = await common.getRowsCount("products");
 
     return {
         pagesCount: Math.ceil(count / rowsPerPage),
-        productType: await index.getProductType(language, typeId),
+        productType: {
+            ...productType,
+            description: JSON.parse(productType.description)
+        },
         items: await index.getProducts(language, typeId, page, rowsPerPage)
     }
 });
