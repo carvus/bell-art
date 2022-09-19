@@ -8,7 +8,7 @@ export default {
     },
     getProductType(language: string | string[] | undefined, id: string) {
         return operations.exec(
-            `SELECT id, title_${language} title, image FROM product_types ` +
+            `SELECT id, title_${language} title, description_${language} description, image FROM product_types ` +
             "WHERE `id` = ?",
             [id]
         );
