@@ -7,7 +7,12 @@ const { common, index } = DbOperations;
 export const getProductTypesController = createController(async (req: Request) => {
     const { language } = req.headers;
     return {
-        items: await index.getProductTypes(language)
+        items: (await index.getProductTypes(language)).map((el: { id: number, description: string, image: string, title: string }) => {
+            return {
+                ...el,
+                description: JSON.parse(el.description)
+            }
+        })
     }
 });
 
