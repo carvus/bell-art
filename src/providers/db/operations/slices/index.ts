@@ -3,7 +3,7 @@ import operations from "../common";
 export default {
     getProductTypes(language: string | string[] | undefined) {
         return operations.exec(
-            `SELECT id, title_${language} title, image FROM product_types`
+            `SELECT id, title_${language} title, description_${language} description, image FROM product_types`
         );
     },
     getProductType(language: string | string[] | undefined, id: string) {
