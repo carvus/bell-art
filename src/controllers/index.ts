@@ -23,9 +23,8 @@ export const sendMailController = createController(async (req: Request) => {
 });
 
 export const getSliderImagesController = createController(async (req: Request) => {
-    const rslts = await common.select("slider_images", ["title"]);
     return {
-        items: rslts.map(el => el.title)
+        items: await common.select("slider_images", ["title", "mobile"])
     };
 });
 
