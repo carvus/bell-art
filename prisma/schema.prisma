@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ProductType {
+  id             Int     @id @default(autoincrement())
+  title_en       String
+  title_hy       String
+  description_en String
+  description_hy String
+  image          String?
+
+  // One product type has many products
+  products Product[]
+
+  @@map("product_types")
+}
+
+model Product {
+  id             Int     @id @default(autoincrement())
+  type_id        Int
+  title_en       String
+  title_hy       String
+  description_en String
+  description_hy String
+  price          Decimal @db.Decimal(10, 2)
+  image          String?
+
+  // Relation: product belongs to one product type
+  productType ProductType @relation(fields: [type_id], references: [id])
+
+  @@map("products")
+}
+
+model Service {
+  id             Int     @id @default(autoincrement())
+  title_en       String
+  title_hy       String
+  description_en String
+  description_hy String
+  image          String?
+
+  @@map("services")
+}

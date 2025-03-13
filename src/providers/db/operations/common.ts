@@ -1,31 +1,67 @@
-import { TTransactionParam } from './../../../lib/types';
+import { TTransactionParam } from "./../../../lib/types";
 import { format, ResultSetHeader } from "mysql2";
 import db from "..";
 import { TDictionary } from "../../../lib/types";
-import { _WRONG_PARAMS_ } from './../../../helpers/error-codes';
+import { _WRONG_PARAMS_ } from "./../../../helpers/error-codes";
 
 const operations: {
-  getOne: (tableName: string, value: string | number, key?: string) => Promise<any>,
-  exec: (query: string, params?: (string | number | TDictionary | (string | number | TDictionary)[])[], isCrud?: boolean) => Promise<any>,
-  select: (tableName: string, columns: string[] | `*`, condition?: TDictionary) => Promise<any[]>,
+  getOne: (
+    tableName: string,
+    value: string | number,
+    key?: string
+  ) => Promise<any>;
+  exec: (
+    query: string,
+    params?: (
+      | string
+      | number
+      | TDictionary
+      | (string | number | TDictionary)[]
+    )[],
+    isCrud?: boolean
+  ) => Promise<any>;
+  select: (
+    tableName: string,
+    columns: string[] | `*`,
+    condition?: TDictionary
+  ) => Promise<any[]>;
   insert: {
-    (tableName: string, data: TDictionary | TDictionary[], getQuery?: false): Promise<{ insertId?: number, message: string }>
-    (tableName: string, data: TDictionary | TDictionary[], getQuery: true): Promise<string>
-  },
-  update: (tableName: string, data: TDictionary, condition?: TDictionary, getQuery?: boolean) => Promise<{ message: string } | string>,
-  remove: (tableName: string, condition: TDictionary, getQuery?: boolean) => Promise<{ message: string } | string>
-  transactions: (queries: TTransactionParam, inOrder?: boolean) => Promise<any>
-  getRowsCount: (tableName: string) => Promise<[{ count: number }]>
-
+    (
+      tableName: string,
+      data: TDictionary | TDictionary[],
+      getQuery?: false
+    ): Promise<{ insertId?: number; message: string }>;
+    (
+      tableName: string,
+      data: TDictionary | TDictionary[],
+      getQuery: true
+    ): Promise<string>;
+  };
+  update: (
+    tableName: string,
+    data: TDictionary,
+    condition?: TDictionary,
+    getQuery?: boolean
+  ) => Promise<{ message: string } | string>;
+  remove: (
+    tableName: string,
+    condition: TDictionary,
+    getQuery?: boolean
+  ) => Promise<{ message: string } | string>;
+  transactions: (queries: TTransactionParam, inOrder?: boolean) => Promise<any>;
+  getRowsCount: (tableName: string) => Promise<[{ count: number }]>;
 } = {
   async getRowsCount(tableName) {
     return operations.exec("SELECT COUNT(*) count FROM ??;", [tableName]);
   },
   async getOne(tableName, value, key = "id") {
-    const items = await this.exec("SELECT * FROM ?? WHERE ??=?;", [tableName, key, value]);
+    const items = await this.exec("SELECT * FROM ?? WHERE ??=?;", [
+      tableName,
+      key,
+      value,
+    ]);
 
-    if (items.length > 0)
-      return items[0];
+    if (items.length > 0) return items[0];
     throw _WRONG_PARAMS_;
   },
   async exec(query, params, isCrud = false) {
@@ -47,14 +83,15 @@ const operations: {
       throw {
         errCode: (err as unknown & { errno: any }).errno,
         errMessage: (err as unknown & { sqlMessage: string }).sqlMessage,
-        isSql: true
-      }
+        isSql: true,
+      };
     }
-
   },
   async select(tableName, columns, condition) {
     let isColumnsАvailable = Array.isArray(columns);
-    let query = `SELECT ${isColumnsАvailable ? '??' : '*'} FROM ?? ${condition ? `WHERE ? ;` : `;`}`;
+    let query = `SELECT ${isColumnsАvailable ? "??" : "*"} FROM ?? ${
+      condition ? `WHERE ? ;` : `;`
+    }`;
 
     const formatParams: any[] = [tableName];
     if (isColumnsАvailable) formatParams.unshift(columns);
@@ -63,21 +100,28 @@ const operations: {
     const data = await this.exec(query, formatParams, true);
     return data;
   },
-  async insert(tableName: string, data: TDictionary | TDictionary[], getQuery?: boolean): Promise<any> {
+  async insert(
+    tableName: string,
+    data: TDictionary | TDictionary[],
+    getQuery?: boolean
+  ): Promise<any> {
     if (!Array.isArray(data)) data = [data];
 
     let query = `INSERT INTO ?? ( ?? ) VALUES `;
 
-    for (let i = 0; i < data.length; i++)
-      query += `( ? ), `;
+    for (let i = 0; i < data.length; i++) query += `( ? ), `;
 
     query = query.slice(0, query.lastIndexOf(`,`));
-    const formatParams = [tableName, Object.keys(Array.isArray(data) ? data[0] : data[0]), ...data.map((el: any) => Object.values(el))];
+    const formatParams = [
+      tableName,
+      Object.keys(Array.isArray(data) ? data[0] : data[0]),
+      ...data.map((el: any) => Object.values(el)),
+    ];
 
-    if (getQuery) return format(query, formatParams)
+    if (getQuery) return format(query, formatParams);
     const { insertId } = await this.exec(query, formatParams, true);
 
-    return { insertId, message: `Տվյալները ավելացվեցին հաջողությամբ` }
+    return { insertId, message: `Տվյալները ավելացվեցին հաջողությամբ` };
   },
   async update(tableName, data, condition, getQuery) {
     const query = `UPDATE ?? SET ? ${condition ? `WHERE ? ;` : `;`}`;
@@ -85,21 +129,20 @@ const operations: {
     const formatParams: any[] = [tableName, data];
     if (condition) formatParams.push(condition);
 
-    if (getQuery) return format(query, formatParams)
+    if (getQuery) return format(query, formatParams);
     await this.exec(query, formatParams, true);
     return {
-      message: `Տվյալները փոխվեցին հաջողությամբ`
-    }
+      message: `Տվյալները փոխվեցին հաջողությամբ`,
+    };
   },
   async remove(tableName, condition, getQuery) {
     const query = `DELETE FROM ?? WHERE ? `;
-    if (getQuery)
-      return format(query, [tableName, condition]);
+    if (getQuery) return format(query, [tableName, condition]);
     await this.exec(query, [tableName, condition], true);
 
     return {
-      message: `Տվյալները ջնջվեցին հաջողությամբ`
-    }
+      message: `Տվյալները ջնջվեցին հաջողությամբ`,
+    };
   },
   async transactions(queries, inOrder = false) {
     const connection = await db.getConnection();
@@ -110,19 +153,24 @@ const operations: {
       const results = [];
       const insertIds: { [key: string]: number } = {};
       for (let i = 0; i < queries.length; i++) {
-        const query = format(queries[i][0], queries[i][1].map(el => insertIds[typeof el == 'string' ? el : ''] ?? el));
+        const query = format(
+          queries[i][0],
+          queries[i][1].map(
+            (el) => insertIds[typeof el == "string" ? el : ""] ?? el
+          )
+        );
         console.log(`transaction exec query`, query);
 
         if (inOrder) {
           const currentAction = await connection.query(query);
-          insertIds[i + "_insertId"] = (currentAction[0] as ResultSetHeader)?.insertId;
+          insertIds[i + "_insertId"] = (
+            currentAction[0] as ResultSetHeader
+          )?.insertId;
 
           results.push(currentAction);
-        }
-        else
-          queryPromises.push(connection.query(query));
+        } else queryPromises.push(connection.query(query));
       }
-      if (!inOrder) results.push(...await Promise.all(queryPromises));
+      if (!inOrder) results.push(...(await Promise.all(queryPromises)));
 
       await connection.commit();
       connection.release();
@@ -132,8 +180,7 @@ const operations: {
       connection.release();
       throw err;
     }
-  }
-
+  },
 };
 
 export default operations;
